@@ -40,11 +40,17 @@ def click_button():
         loe6.append([])
         for j in range(n):
             loe1[i].append(Entry(window2, width=5))
+            loe1[i][j].insert(END, 0)
             loe2[i].append(Entry(window2, width=5))
+            loe2[i][j].insert(END, 0)
             loe3[i].append(Entry(window2, width=5))
+            loe3[i][j].insert(END, 0)
             loe4[i].append(Entry(window2, width=5))
+            loe4[i][j].insert(END, 0)
             loe5[i].append(Entry(window2, width=5))
+            loe5[i][j].insert(END, 0)
             loe6[i].append(Entry(window2, width=5))
+            loe6[i][j].insert(END, 0)
             loe1[i][j].grid(row = i + 1, column = j + 1)
             loe2[i][j].grid(row = i + 1, column = n + j + 2)
             loe3[i][j].grid(row = i + 1, column = 2 * n + j + 3)
@@ -70,22 +76,18 @@ def click_button2():
         for k in range(6):
             lon[k].append([])
         for j in range(n):
-            lon[0][i].append(int(loe1[i][j].get()))
-            lon[1][i].append(int(loe2[i][j].get()))
-            lon[2][i].append(int(loe3[i][j].get()))
-            lon[3][i].append(int(loe4[i][j].get()))
-            lon[4][i].append(int(loe5[i][j].get()))
-            lon[5][i].append(int(loe6[i][j].get()))
-    w = []
-    v = []
-    for i in range(6):
-        w.append([])
-        v.append([])
-        w[i], v[i] = LA.eig(lon[i])
-        l2 = Label(window, text = 'Собственные числа:' + str(w[i]))
-        l2.pack()
-        l3 = Label(window, text='Собственные векторы:' + str(v[i]))
-        l3.pack()
+            lon[0][i].append(float(loe1[i][j].get())) #C1
+            lon[1][i].append(float(loe2[i][j].get())) #B1
+            lon[2][i].append(float(loe3[i][j].get())) #M1
+            lon[3][i].append(float(loe4[i][j].get())) #C2
+            lon[4][i].append(float(loe5[i][j].get())) #B2
+            lon[5][i].append(float(loe6[i][j].get())) #M2
+    MC = np.dot(LA.inv(lon[2]), lon[0]) #M^(-1)*C
+    w, v = LA.eig(MC)
+    l2 = Label(window, text = 'Собственные числа: ' + str(w))
+    l2.pack()
+    l3 = Label(window, text='Собственные векторы:\n ' + str(v))
+    l3.pack()
 
 window = Tk()
 window.state('zoomed')

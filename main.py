@@ -84,7 +84,7 @@ def click_button2():
             lon[5][i].append(float(loe6[i][j].get())) #M2
     MC = np.dot(LA.inv(lon[2]), lon[0]) #M^(-1)*C
     w, v = LA.eig(MC)
-    l2 = Label(window, text = 'Собственные числа: ' + str(w))
+    l2 = Label(window, text = 'Собственные числа: ' + str(np.sqrt(w)))
     l2.pack()
     l3 = Label(window, text='Собственные векторы:\n ' + str(v))
     l3.pack()

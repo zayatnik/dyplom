@@ -89,13 +89,6 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
     for i in l4i:
         for j in i:
             j.destroy()
-    t = []
-    t.append(loe1[0][0].get())
-    t.append(loe2[0][0].get())
-    t.append(loe3[0][0].get())
-    t.append(loe4[0][0].get())
-    t.append(loe5[0][0].get())
-    t.append(loe6[0][0].get())
     lon = []
     for i in range(6):
         lon.append([])
@@ -109,14 +102,27 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
             lon[3][i].append(float(loe4[i][j].get())) #C2
             lon[4][i].append(float(loe5[i][j].get())) #B2
             lon[5][i].append(float(loe6[i][j].get())) #M2
-    er1 = False
+    er1 = er2 = er3 = False
     for i in range(n):
         for j in range(n):
-            if lon[0][i][j] != 0 and i != j or lon[1][i][j] != 0 and i != j or lon[2][i][j] != 0 and i != j:
+            if lon[0][i][j] != lon[0][j][i] or lon[1][i][j] != lon[1][j][i] or lon[2][i][j] != lon[2][j][i]:
                 er1 = True
                 break
+            if lon[3][i][j] != 0 and i == j or lon[4][i][j] != 0 and i == j or lon[5][i][j] != 0 and i == j:
+                er2 = True
+                break
+            if lon[3][i][j] == 0 and lon[3][j][i] == 0 and i != j or lon[4][i][j] == 0 and lon[4][j][i] == 0 and i !=j or lon[5][i][j] == 0 and lon[5][j][i] == 0 and i !=j:
+                er3 = True
+                break
+            if lon[3][i][j] != 0 and lon[3][j][i] != 0 and i != j or lon[4][i][j] != 0 and lon[4][j][i] != 0 and i !=j or lon[5][i][j] != 0 and lon[5][j][i] != 0 and i !=j:
+                er3 = True
+                break
     if er1:
-        showerror('Ошибка!', 'Матрицы взаимных связей должны быть диагональными!')
+        showerror('Ошибка!', 'Матрицы взаимных связей должны быть симметричными!')
+    elif er2:
+        showerror('Ошибка!', 'Матрицы направленных связей должны иметь нулевые диагонали!')
+    elif er3:
+        showerror('Ошибка!', 'Если один элемент матрицы напрвленных связей равен нулю, то другой должен быть ненулевым, и наоборот!')
     else:
         MC = np.dot(LA.inv(lon[2]), lon[0]) #M^(-1)*C
         w, v = LA.eig(MC)
@@ -153,12 +159,8 @@ window['bg'] = 'aquamarine'
 window.state('zoomed')
 window.title("Поиск наиболее значимых причин самовозбуждения колебаний механических систем")
 window.geometry('1600x900')
-l2 = Label(window)
-l2i = list()
-l3 = Label(window)
-l3i = list()
-l4 = Label(window)
-l4i = list()
+l2 = l3 = l4 = Label(window)
+l2i = l3i = l4i = list()
 l1 = Label(text = 'Введите размерность системы', font = myfont)
 l1['bg'] = 'aquamarine'
 e1 = Entry(window, width=10, font = myfont, justify = CENTER)

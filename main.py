@@ -196,7 +196,6 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
             for j in range(n):
                 l4i[i][j].place(relx = 1.0 / float(n + 1) * (j + 1), rely = 0.75 + i * 0.05, anchor = 'c')
 
-
         graph = []
         for i in range(n):
             graph.append([])
@@ -263,6 +262,14 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
         plt.axis('off')
         plt.show()
 
+        for i in very_good_cycles:
+            flag = False
+            for j in i.cycle[1:]:
+                if j[1] > 2:
+                    flag = True
+                    break
+            if not flag:
+                very_good_cycles.remove(i)
 
 
 

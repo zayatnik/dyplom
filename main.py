@@ -12,11 +12,13 @@ myfont = 'Courier 30'
 colors = ['0', 'g', 'b']
 arrowstyles = ['-', '<-']
 
+
 def firsts(path):
     res = []
     for i in path:
         res.append(i[0])
     return res
+
 
 def dfs(graph, start, end):
     fringe = [(start, [])]
@@ -270,6 +272,21 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
                     break
             if not flag:
                 very_good_cycles.remove(i)
+
+        for i in very_good_cycles:
+            print(i)
+            for j in range(n):
+                print(f'Работа по {j}-й форме:')
+                sum = 0
+                i_ind = i.cycle[0]
+                for k in i.cycle[1:]:
+                    j_ind = k[0]
+                    type = k[1]
+                    if type > 2:
+                        sum += lon[type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j]
+                    sum *= w[j] ** (type - 2)
+                print(sum)
+
 
 
 

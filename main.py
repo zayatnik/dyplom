@@ -150,9 +150,6 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
             if lon[3][i][j] != 0 and i == j or lon[4][i][j] != 0 and i == j or lon[5][i][j] != 0 and i == j:
                 er2 = True
                 break
-            if lon[3][i][j] == 0 and lon[3][j][i] == 0 and i != j or lon[4][i][j] == 0 and lon[4][j][i] == 0 and i !=j or lon[5][i][j] == 0 and lon[5][j][i] == 0 and i !=j:
-                er3 = True
-                break
             if lon[3][i][j] != 0 and lon[3][j][i] != 0 and i != j or lon[4][i][j] != 0 and lon[4][j][i] != 0 and i !=j or lon[5][i][j] != 0 and lon[5][j][i] != 0 and i !=j:
                 er3 = True
                 break
@@ -218,6 +215,7 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
         for i in good_cycles:
             very_good_cycles.append(Cycle(i))
 
+
         types = {}
         for i, val in enumerate(graph):
             for j in val:
@@ -259,19 +257,29 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
                 ymin = i[1]
             if i[1] > ymax:
                 ymax = i[1]
+
+        x = [1000]
+        y = [1000]
+        plt.plot(x, y, 'black', label='связи по координате (С)')
+        plt.plot(x, y, 'g', label='связи по скорости (B)')
+        plt.plot(x, y, 'b', label='связи по ускорению (M)')
+        plt.legend()
+
         plt.xlim([xmin - 0.5, xmax + 0.5])
         plt.ylim([ymin - 0.5, ymax + 0.5])
         plt.axis('off')
         plt.show()
 
-        for i in very_good_cycles:
+        i = 0
+        while i < len(very_good_cycles):
             flag = False
-            for j in i.cycle[1:]:
+            for j in very_good_cycles[i].cycle[1:]:
                 if j[1] > 2:
                     flag = True
+                    i += 1
                     break
             if not flag:
-                very_good_cycles.remove(i)
+                very_good_cycles.remove(very_good_cycles[i])
 
         for i in very_good_cycles:
             print(i)
@@ -283,11 +291,9 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
                     j_ind = k[0]
                     type = k[1]
                     if type > 2:
-                        sum += lon[type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j]
-                    sum *= w[j] ** (type - 2)
+                        sum += lon[type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j] * (w1[j] / 2 / math.pi) ** (type - 2)
+                    i_ind = j_ind
                 print(sum)
-
-
 
 
 window = Tk()

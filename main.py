@@ -6,11 +6,12 @@ import math
 import networkx as nx
 import matplotlib.pyplot as plt
 
-
 n = 1
 myfont = 'Courier 30'
 colors = ['0', 'g', 'b']
+colours = ['black', 'green', 'blue']
 arrowstyles = ['-', '<-']
+arrows = ['---', '-->']
 
 
 def firsts(path):
@@ -51,7 +52,7 @@ class Cycle:
     def __str__(self):
         res = str(self.cycle[0])
         for i in self.cycle[1:]:
-            res += f' -->{(i[1])}--> {i[0]}'
+            res += f'{arrows[i[1] // 3]}{i[0]}'
         return res
 
 
@@ -268,7 +269,8 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
         plt.xlim([xmin - 0.5, xmax + 0.5])
         plt.ylim([ymin - 0.5, ymax + 0.5])
         plt.axis('off')
-        plt.show()
+        plt.savefig('graph.png')
+        plt.close()
 
         i = 0
         while i < len(very_good_cycles):
@@ -281,10 +283,33 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
             if not flag:
                 very_good_cycles.remove(very_good_cycles[i])
 
+
+        window3 = Tk()
+        window3['bg'] = 'aquamarine'
+        window3.title("Работа циклов")
+        label1 = Label(window3, text='цикл', font=myfont)
+        label1['bg'] = 'aquamarine'
+        label1.grid(row=0, column=0, columnspan=n*n+(n-1))
+        for i in range(n):
+            label2 = Label(window3, text=f'работа по\n{i}-й форме', font=myfont)
+            label2['bg'] = 'aquamarine'
+            label2.grid(row=0, column=i+1+n*n+(n-1))
+        row = 1
         for i in very_good_cycles:
-            print(i)
+            label3 = Label(window3, text=str(i.cycle[0]), font=myfont)
+            label3['bg'] = 'aquamarine'
+            label3.grid(row=row, column=0)
+            column = 1
+            for j in i.cycle[1:]:
+                label31 = Label(window3, text=arrows[j[1]//3], font=myfont, fg=colours[j[1]%3])
+                label31['bg'] = 'aquamarine'
+                label31.grid(row=row, column=column)
+                column += 1
+                label31 = Label(window3, text=str(j[0]), font=myfont)
+                label31['bg'] = 'aquamarine'
+                label31.grid(row=row, column=column)
+                column += 1
             for j in range(n):
-                print(f'Работа по {j}-й форме:')
                 sum = 0
                 i_ind = i.cycle[0]
                 for k in i.cycle[1:]:
@@ -293,7 +318,10 @@ def click_button2(loe1, loe2, loe3, loe4, loe5, loe6, n):
                     if type > 2:
                         sum += lon[type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j] * (w1[j] / 2 / math.pi) ** (type - 2)
                     i_ind = j_ind
-                print(sum)
+                label4 = Label(window3, text=str(round(sum, 5)), font=myfont)
+                label4['bg'] = 'aquamarine'
+                label4.grid(row=row, column=j+1+n*n+(n-1))
+            row += 1
 
 
 window = Tk()

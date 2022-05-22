@@ -116,6 +116,35 @@ def unstable_forms(works: list) -> list:
     return res
 
 
+def the_most_important_cycles_by_form(cycles: list, work_for_cycles: list, form: int) -> list:
+    res = [[], []]
+    for i, cycle in enumerate(cycles):
+        ind = 0
+        for j, w in res[1]:
+            if work_for_cycles[i][form][1] < w:
+                ind += 1
+            if work_for_cycles[i][form][1] >= w or ind > 2:
+                break
+        if ind < 3:
+            res = [res[0][:ind] + [cycle] + res[0][ind:2], res[1][:ind] + [work_for_cycles[i][form]] + res[1][ind:2]]
+    return res
+
+
+def clean_the_most_important_connections(the_most_important_connections: list) -> list:
+    res = [[], []]
+    for i in range(len(the_most_important_connections[0])):
+        index = 0
+        for j in res[1]:
+            if the_most_important_connections[1][i] < j:
+                index += 1
+            if the_most_important_connections[1][i] >= j or index > 2:
+                break
+        if index < 3 and the_most_important_connections[1][i] > 0:
+            res = [res[0][:index] + [the_most_important_connections[0][i]] + res[0][index:2], res[1][:index] +
+                   [the_most_important_connections[1][i]] + res[1][index:2]]
+    return res
+
+
 class Cycle:
     def __init__(self, cycle):
         self.cycle = cycle
@@ -300,7 +329,7 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     plt.close()
 
     cycles = clean_cycles(cycles)
-    work = total_work(cycles, lon, v, w1)
+    work, work_for_cycles = total_work(cycles, lon, v, w1), [[] for _ in cycles]
 
     font_for_cycles = my_font if len(cycles) < 16 else my_font2
     window3 = Tk()
@@ -312,7 +341,7 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
         label2 = Label(window3, text=f' работа по \n {i + 1}-й форме ', font=font_for_cycles, bg='aquamarine')
         label2.grid(row=0, column=i + n * n + n)
     row, new_row, delta = 1, 0, n * (n + 2)
-    for i in cycles:
+    for ind, i in enumerate(cycles):
         label3 = Label(window3, text=str(i.cycle[0] + 1), font=font_for_cycles, bg='aquamarine')
         if row > 27:
             label3.grid(row=new_row, column=delta)
@@ -336,16 +365,17 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
         for j in range(n):
             sum, i_ind = 0, i.cycle[0]
             for k in i.cycle[1:]:
-                j_ind = k[0]
-                arrow_type = k[1]
+                j_ind, arrow_type = k[0], k[1]
                 if arrow_type > 2:
                     sum += lon[arrow_type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j] * (w1[j] / 2 / math.pi) **\
                            (arrow_type - 2)
                 i_ind = j_ind
             if sum:
+                work_for_cycles[ind].append((round(sum, 2), round(sum / work[j] * 100, 2)))
                 label4 = Label(window3, text=f' {str(round(sum, 2))} - {str(round(sum / work[j] * 100, 2))}% ',
                                font=font_for_cycles, bg='aquamarine')
             else:
+                work_for_cycles[ind].append((round(sum, 2), 0.0))
                 label4 = Label(window3, text=f' {str(round(sum, 2))} - 0.0% ', font=font_for_cycles, bg='aquamarine')
             if row > 27:
                 label4.grid(row=new_row, column=delta + j + n * n + n)
@@ -374,24 +404,69 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     window4 = Tk()
     window4.title('Потенциально неустойчивые формы и наиболее значимые связи')
     window4['bg'] = 'aquamarine'
-    forms, forms_text = unstable_forms(work), ''
+    forms = unstable_forms(work)
     if len(forms) > 1:
         label6 = Label(window4, text=f'Потенциально неустойчивыми являются формы {forms[0] + 1} и {forms[1] + 1}',
                        font=my_font, bg='aquamarine')
     else:
         label6 = Label(window4, text=f'Потенциально неустойчивой является форма {forms[0] + 1}', font=my_font,
                        bg='aquamarine')
-    label6.grid(row=0, column=0)
+    label6.grid(row=0, column=0, columnspan=n * n + n)
     row = 1
-    for i in forms:
-        label61 = Label(window4, text=f'наиболее значимые циклы по {i + 1}-й форме:', font=my_font, bg='aquamarine')
-        label61.grid(row=row, column=0)
+    for form in forms:
+        label61 = Label(window4, text=f'наиболее значимые циклы по {form + 1}-й форме:', font=my_font, bg='aquamarine')
+        label61.grid(row=row, column=0, columnspan=n * n + n)
+        row += 1
+        res = the_most_important_cycles_by_form(cycles, work_for_cycles, form)
+        for j in range(len(res[0])):
+            label71 = Label(window4, text=str(res[0][j].cycle[0] + 1), font=my_font, bg='aquamarine')
+            label71.grid(row=row, column=0)
+            column = 1
+            for k in res[0][j].cycle[1:]:
+                label72 = Label(window4, text=arrows_styles2[k[1] // 3], font=my_font, fg=arrows_colors[k[1] % 3],
+                                bg='aquamarine')
+                label72.grid(row=row, column=column)
+                label73 = Label(window4, text=str(k[0] + 1), font=my_font, bg='aquamarine')
+                label73.grid(row=row, column=column + 1)
+                column += 2
+            label74 = Label(window4, text=f'{res[1][j][0]} - {res[1][j][1]}%', font=my_font, bg='aquamarine')
+            label74.grid(row=row, column=n * n + n - 1)
+            row += 1
+
+    the_most_important_connections, sum = [[], []], 0
+    for i in range(3, 6):
+        for j in range(n):
+            for k in range(n):
+                the_most_important_connections[0].append((j, k, i))
+                the_most_important_connections[1].append(lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] *
+                                                         (w1[forms[0]] / 2 / math.pi) ** (i - 2))
+                sum += lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] * (w1[forms[0]] / 2 / math.pi) ** (i - 2)
+    the_most_important_connections[1] = list(map(lambda el: el / sum, the_most_important_connections[1]))
+    the_most_important_connections = clean_the_most_important_connections(the_most_important_connections)
+    label8 = Label(window4, text='наиболее значимые связи:', font=my_font, bg='aquamarine')
+    label8.grid(row=row, column=0, columnspan=n * n + n)
+    row += 1
+    if the_most_important_connections[0]:
+        for i in range(len(the_most_important_connections[0])):
+            label81 = Label(window4, text=str(the_most_important_connections[0][i][0] + 1), font=my_font,
+                            bg='aquamarine')
+            label81.grid(row=row, column=0)
+            label82 = Label(window4, text='-->', font=my_font, bg='aquamarine',
+                            fg=arrows_colors[the_most_important_connections[0][i][2] % 3])
+            label82.grid(row=row, column=1)
+            label83 = Label(window4, text=str(the_most_important_connections[0][i][1] + 1), font=my_font,
+                            bg='aquamarine')
+            label83.grid(row=row, column=2)
+            label84 = Label(window4, text=f'{round(the_most_important_connections[1][i], 2)}%', font=my_font,
+                            bg='aquamarine')
+            label84.grid(row=row, column=3, columnspan=n * n + n - 3)
+            row += 1
 
 
 window = Tk()
 window['bg'] = 'aquamarine'
 window.state('zoomed')
-window.title("Поиск наиболее значимых причин самовозбуждения колебаний механических систем")
+window.title('Поиск наиболее значимых причин самовозбуждения колебаний механических систем')
 window.geometry('1600x900')
 l2 = l3 = l4 = Label(window)
 l2i = l3i = l4i = list()

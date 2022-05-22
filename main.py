@@ -1,11 +1,13 @@
 from tkinter import *
 from tkinter.messagebox import *
+from tkinter import ttk
+from PIL import ImageTk, Image
 import numpy as np
 from numpy import linalg as la
 import math
 import networkx as nx
 import matplotlib.pyplot as plt
-
+from os import remove
 
 n = 1
 my_font, my_font2 = 'Courier 30', 'Courier 15'
@@ -204,24 +206,27 @@ def click_button1():
             loe4[i][j].grid(row=n + i + 2, column=j + 1)
             loe5[i][j].grid(row=n + i + 2, column=n + j + 2)
             loe6[i][j].grid(row=n + i + 2, column=2 * n + j + 3)
-
-    b2 = Button(window2, text='OK', command=lambda: [click_button2(loe1, loe2, loe3, loe4, loe5, loe6),
-                                                     window2.destroy()], font=my_font, bg='aquamarine')
+    b2 = Button(window2, text='OK', command=lambda: click_button2(loe1, loe2, loe3, loe4, loe5, loe6, window2),
+                font=my_font, bg='aquamarine')
     b2.grid(row=2 * n + 2, column=0, columnspan=3 * n + 3)
 
 
-def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, loe6: list):
-    global l2, l3, l4, l2i, l3i, l4i, n
-    l2.destroy()
+def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, loe6: list, window2):
+    global l2, l3, l4, l2i, l3i, l4i, la4, la5, la61, la62, la63, la64, la65, la66, la71, la72, la73, la74, la75, la76
+    global n
     for i in l2i:
         i.destroy()
     for i in l3i:
         i.destroy()
-    l3.destroy()
-    l4.destroy()
     for i in l4i:
         for j in i:
             j.destroy()
+    for i in [l2, l3, l4, la4, la5, la61, la62, la63, la64, la65, la66]:
+        i.destroy()
+    for i in [la71, la72, la73, la74, la75, la76]:
+        for j in i:
+            for k in j:
+                k.destroy()
 
     lon = [[[] for __ in range(n)] for _ in range(6)]
     for i in range(n):
@@ -232,6 +237,37 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
             lon[3][i].append(float(loe4[i][j].get()))  # C2
             lon[4][i].append(float(loe5[i][j].get()))  # B2
             lon[5][i].append(float(loe6[i][j].get()))  # M2
+
+    la4 = Label(tab2, text='Матрицы взаимных связей:', font=my_font, bg='aquamarine')
+    la4.grid(row=0, column=0, columnspan=3 * n + 3)
+    la5 = Label(tab2, text='Матрицы направленных связей:', font=my_font, bg='aquamarine')
+    la5.grid(row=n + 1, column=0, columnspan=3 * n + 3)
+    la61, la62 = Label(tab2, text='C: ', font=my_font), Label(tab2, text='B: ', font=my_font)
+    la61.grid(row=1, column=0)
+    la62.grid(row=1, column=n + 1)
+    la63, la64 = Label(tab2, text='M: ', font=my_font), Label(tab2, text='C: ', font=my_font)
+    la63.grid(row=1, column=2 * n + 2)
+    la64.grid(row=n + 2, column=0)
+    la65, la66 = Label(tab2, text='B: ', font=my_font), Label(tab2, text='M: ', font=my_font)
+    la65.grid(row=n + 2, column=n + 1)
+    la66.grid(row=n + 2, column=2 * n + 2)
+    la71, la72 = [[[] for __ in range(n)] for _ in range(n)], [[[] for __ in range(n)] for _ in range(n)]
+    la73, la74 = [[[] for __ in range(n)] for _ in range(n)], [[[] for __ in range(n)] for _ in range(n)]
+    la75, la76 = [[[] for __ in range(n)] for _ in range(n)], [[[] for __ in range(n)] for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            la71[i][j] = Label(tab2, text=f' {str(lon[0][i][j])} ', font=my_font)
+            la71[i][j].grid(row=i + 1, column=j + 1)
+            la72[i][j] = Label(tab2, text=f' {str(lon[1][i][j])} ', font=my_font)
+            la72[i][j].grid(row=i + 1, column=n + j + 2)
+            la73[i][j] = Label(tab2, text=f' {str(lon[2][i][j])} ', font=my_font)
+            la73[i][j].grid(row=i + 1, column=2 * n + j + 3)
+            la74[i][j] = Label(tab2, text=f' {str(lon[3][i][j])} ', font=my_font)
+            la74[i][j].grid(row=n + i + 2, column=j + 1)
+            la75[i][j] = Label(tab2, text=f' {str(lon[4][i][j])} ', font=my_font)
+            la75[i][j].grid(row=n + i + 2, column=n + j + 2)
+            la76[i][j] = Label(tab2, text=f' {str(lon[5][i][j])} ', font=my_font)
+            la76[i][j].grid(row=n + i + 2, column=2 * n + j + 3)
 
     for i in range(n):
         for j in range(n):
@@ -269,23 +305,23 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
             return None
     w1 = np.sqrt(w)
 
-    l2 = Label(window, text='Собственные числа:', font=my_font)
+    l2 = Label(tab1, text='Собственные числа:', font=my_font)
     l2.place(relx=0.5, rely=0.4, anchor='center')
     l2i, l3i, l4i = [], [], []
     for i in range(n):
-        l2i.append(Label(window, text=str(round(w1[i], 5)), font=my_font))
-        l2i[i].place(relx=1.0 / float(n + 1) * (i + 1), rely=0.45, anchor='center')
-        l3i.append(Label(window, text=str(round(w1[i] / (2 * math.pi), 5)) + ' Гц', font=my_font))
-        l3i[i].place(relx=1.0 / float(n + 1) * (i + 1), rely=0.6, anchor='center')
+        l2i.append(Label(tab1, text=str(round(w1[i], 5)), font=my_font))
+        l2i[i].place(relx=1.0 / float(n + 1) * (i + 1), rely=0.475, anchor='center')
+        l3i.append(Label(tab1, text=str(round(w1[i] / (2 * math.pi), 5)) + ' Гц', font=my_font))
+        l3i[i].place(relx=1.0 / float(n + 1) * (i + 1), rely=0.625, anchor='center')
         l4ij = []
         for j in range(n):
-            l4ij.append(Label(window, text=str(round(v[i][j], 5)), font=my_font))
+            l4ij.append(Label(tab1, text=str(round(v[i][j], 5)), font=my_font))
         l4i.append(l4ij)
         for j in range(n):
-            l4i[i][j].place(relx=1.0 / float(n + 1) * (j + 1), rely=0.75 + i * 0.05, anchor='center')
-    l3 = Label(window, text='Cобственные частоты:', font=my_font)
+            l4i[i][j].place(relx=1.0 / float(n + 1) * (j + 1), rely=0.775 + i * 0.05, anchor='center')
+    l3 = Label(tab1, text='Cобственные частоты:', font=my_font)
     l3.place(relx=0.5, rely=0.55, anchor='center')
-    l4 = Label(window, text='Собственные векторы:', font=my_font)
+    l4 = Label(tab1, text='Собственные векторы:', font=my_font)
     l4.place(relx=0.5, rely=0.7, anchor='center')
 
     graph, cycles = get_graph_and_cycles_from_lon(lon)
@@ -327,6 +363,11 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     plt.axis('off')
     plt.savefig('graph.png')
     plt.close()
+    img = ImageTk.PhotoImage(Image.open('graph.png'))
+    panel = Label(tab3, image=img)
+    panel.place(relx=0.5, rely=0.5, anchor='center')
+    window2.destroy()
+    window.mainloop()
 
     cycles = clean_cycles(cycles)
     work, work_for_cycles = total_work(cycles, lon, v, w1), [[] for _ in cycles]
@@ -463,17 +504,37 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
             row += 1
 
 
+try:
+    remove('graph.png')
+except:
+    pass
 window = Tk()
 window['bg'] = 'aquamarine'
 window.state('zoomed')
 window.title('Поиск наиболее значимых причин самовозбуждения колебаний механических систем')
 window.geometry('1600x900')
-l2 = l3 = l4 = Label(window)
+tab_control = ttk.Notebook(window)
+s = ttk.Style()
+s.theme_create('MyStyle', parent="alt", settings={'TNotebook.Tab': {'configure': {'font': my_font2,
+                                                                                  'background': 'light cyan'}}})
+s.theme_use('MyStyle')
+tab1, tab2 = Frame(tab_control, background='aquamarine'), Frame(tab_control, background='aquamarine')
+tab3, tab4 = Frame(tab_control, background='aquamarine'), Frame(tab_control, background='aquamarine')
+tab5 = Frame(tab_control, background='aquamarine')
+tab_control.add(tab1, text='Размерность системы, собственные формы ')
+tab_control.add(tab2, text='Введённые матрицы ')
+tab_control.add(tab3, text='Граф ')
+tab_control.add(tab4, text='Работа циклов ')
+tab_control.add(tab5, text='Потенциально неуст. формы, наиболее значимые связи ')
+l2 = l3 = l4 = Label(tab1)
+la4 = la5 = la61 = la62 = la63 = la64 = la65 = la66 = Label(tab2)
 l2i = l3i = l4i = list()
-l1 = Label(text='Введите размерность системы', font=my_font, bg='aquamarine')
-e1 = Entry(window, width=10, font=my_font, justify=CENTER, bg='light cyan')
+la71 = la72 = la73 = la74 = la75 = la76 = [[] for _ in range(n)]
+l1 = Label(tab1, text='Введите размерность системы', font=my_font, bg='aquamarine')
+e1 = Entry(tab1, width=10, font=my_font, justify=CENTER, bg='light cyan')
 l1.place(relx=0.5, rely=0.1, anchor='center')
 e1.place(relx=0.5, rely=0.2, anchor='center')
-b1 = Button(text='OK', command=click_button1, font=my_font, bg='aquamarine')
+b1 = Button(tab1, text='OK', command=click_button1, font=my_font, bg='aquamarine')
 b1.place(relx=0.5, rely=0.3, anchor='center')
+tab_control.pack(expand=1, fill='both')
 window.mainloop()

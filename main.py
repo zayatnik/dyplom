@@ -167,28 +167,29 @@ def click_button1():
     window2['bg'] = 'aquamarine'
     window2.title('Ввод матриц')
 
-    l4 = Label(window2, text='Матрицы взаимных связей:', font=my_font, bg='aquamarine')
+    font_for_entry = my_font if n < 4 else my_font2
+    l4 = Label(window2, text='Матрицы взаимных связей:', font=font_for_entry, bg='aquamarine')
     l4.grid(row=0, column=0, columnspan=3 * n + 3)
-    l5 = Label(window2, text='Матрицы направленных связей:', font=my_font, bg='aquamarine')
+    l5 = Label(window2, text='Матрицы направленных связей:', font=font_for_entry, bg='aquamarine')
     l5.grid(row=n + 1, column=0, columnspan=3 * n + 3)
-    l61, l62 = Label(window2, text='C:', font=my_font), Label(window2, text='B:', font=my_font)
+    l61, l62 = Label(window2, text='C:', font=font_for_entry), Label(window2, text='B:', font=font_for_entry)
     l61.grid(row=1, column=0)
     l62.grid(row=1, column=n + 1)
-    l63, l64 = Label(window2, text='M:', font=my_font), Label(window2, text='C:', font=my_font)
+    l63, l64 = Label(window2, text='M:', font=font_for_entry), Label(window2, text='C:', font=font_for_entry)
     l63.grid(row=1, column=2 * n + 2)
     l64.grid(row=n + 2, column=0)
-    l65, l66 = Label(window2, text='B:', font=my_font), Label(window2, text='M:', font=my_font)
+    l65, l66 = Label(window2, text='B:', font=font_for_entry), Label(window2, text='M:', font=font_for_entry)
     l65.grid(row=n + 2, column=n + 1)
     l66.grid(row=n + 2, column=2*n + 2)
 
     for i in range(n):
         for j in range(n):
-            loe1[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
-            loe2[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
-            loe3[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
-            loe4[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
-            loe5[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
-            loe6[i].append(Entry(window2, width=5, font=my_font, justify=CENTER))
+            loe1[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe2[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe3[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe4[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe5[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe6[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
             if i == j:
                 loe1[i][j].insert(END, 1)
                 loe2[i][j].insert(END, 1)
@@ -207,13 +208,13 @@ def click_button1():
             loe5[i][j].grid(row=n + i + 2, column=n + j + 2)
             loe6[i][j].grid(row=n + i + 2, column=2 * n + j + 3)
     b2 = Button(window2, text='OK', command=lambda: click_button2(loe1, loe2, loe3, loe4, loe5, loe6, window2),
-                font=my_font, bg='aquamarine')
+                font=font_for_entry, bg='aquamarine')
     b2.grid(row=2 * n + 2, column=0, columnspan=3 * n + 3)
 
 
 def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, loe6: list, window2):
     global l2, l3, l4, l2i, l3i, l4i, la4, la5, la61, la62, la63, la64, la65, la66, la71, la72, la73, la74, la75, la76
-    global n
+    global n, labels2
     for i in l2i:
         i.destroy()
     for i in l3i:
@@ -227,6 +228,8 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
         for j in i:
             for k in j:
                 k.destroy()
+    for i in labels2:
+        i.destroy()
 
     lon = [[[] for __ in range(n)] for _ in range(6)]
     for i in range(n):
@@ -238,17 +241,18 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
             lon[4][i].append(float(loe5[i][j].get()))  # B2
             lon[5][i].append(float(loe6[i][j].get()))  # M2
 
-    la4 = Label(tab2, text='Матрицы взаимных связей:', font=my_font, bg='aquamarine')
+    font_for_matrices = my_font if n < 4 else my_font2
+    la4 = Label(tab2, text='Матрицы взаимных связей:', font=font_for_matrices, bg='aquamarine')
     la4.grid(row=0, column=0, columnspan=3 * n + 3)
-    la5 = Label(tab2, text='Матрицы направленных связей:', font=my_font, bg='aquamarine')
+    la5 = Label(tab2, text='Матрицы направленных связей:', font=font_for_matrices, bg='aquamarine')
     la5.grid(row=n + 1, column=0, columnspan=3 * n + 3)
-    la61, la62 = Label(tab2, text='C: ', font=my_font), Label(tab2, text='B: ', font=my_font)
+    la61, la62 = Label(tab2, text='C: ', font=font_for_matrices), Label(tab2, text='B: ', font=font_for_matrices)
     la61.grid(row=1, column=0)
     la62.grid(row=1, column=n + 1)
-    la63, la64 = Label(tab2, text='M: ', font=my_font), Label(tab2, text='C: ', font=my_font)
+    la63, la64 = Label(tab2, text='M: ', font=font_for_matrices), Label(tab2, text='C: ', font=font_for_matrices)
     la63.grid(row=1, column=2 * n + 2)
     la64.grid(row=n + 2, column=0)
-    la65, la66 = Label(tab2, text='B: ', font=my_font), Label(tab2, text='M: ', font=my_font)
+    la65, la66 = Label(tab2, text='B: ', font=font_for_matrices), Label(tab2, text='M: ', font=font_for_matrices)
     la65.grid(row=n + 2, column=n + 1)
     la66.grid(row=n + 2, column=2 * n + 2)
     la71, la72 = [[[] for __ in range(n)] for _ in range(n)], [[[] for __ in range(n)] for _ in range(n)]
@@ -256,17 +260,17 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     la75, la76 = [[[] for __ in range(n)] for _ in range(n)], [[[] for __ in range(n)] for _ in range(n)]
     for i in range(n):
         for j in range(n):
-            la71[i][j] = Label(tab2, text=f' {str(lon[0][i][j])} ', font=my_font)
+            la71[i][j] = Label(tab2, text=f' {str(lon[0][i][j])} ', font=font_for_matrices)
             la71[i][j].grid(row=i + 1, column=j + 1)
-            la72[i][j] = Label(tab2, text=f' {str(lon[1][i][j])} ', font=my_font)
+            la72[i][j] = Label(tab2, text=f' {str(lon[1][i][j])} ', font=font_for_matrices)
             la72[i][j].grid(row=i + 1, column=n + j + 2)
-            la73[i][j] = Label(tab2, text=f' {str(lon[2][i][j])} ', font=my_font)
+            la73[i][j] = Label(tab2, text=f' {str(lon[2][i][j])} ', font=font_for_matrices)
             la73[i][j].grid(row=i + 1, column=2 * n + j + 3)
-            la74[i][j] = Label(tab2, text=f' {str(lon[3][i][j])} ', font=my_font)
+            la74[i][j] = Label(tab2, text=f' {str(lon[3][i][j])} ', font=font_for_matrices)
             la74[i][j].grid(row=n + i + 2, column=j + 1)
-            la75[i][j] = Label(tab2, text=f' {str(lon[4][i][j])} ', font=my_font)
+            la75[i][j] = Label(tab2, text=f' {str(lon[4][i][j])} ', font=font_for_matrices)
             la75[i][j].grid(row=n + i + 2, column=n + j + 2)
-            la76[i][j] = Label(tab2, text=f' {str(lon[5][i][j])} ', font=my_font)
+            la76[i][j] = Label(tab2, text=f' {str(lon[5][i][j])} ', font=font_for_matrices)
             la76[i][j].grid(row=n + i + 2, column=2 * n + j + 3)
 
     for i in range(n):
@@ -367,41 +371,42 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     panel = Label(tab3, image=img)
     panel.place(relx=0.5, rely=0.5, anchor='center')
     window2.destroy()
-    window.mainloop()
 
     cycles = clean_cycles(cycles)
     work, work_for_cycles = total_work(cycles, lon, v, w1), [[] for _ in cycles]
 
-    font_for_cycles = my_font if len(cycles) < 16 else my_font2
-    window3 = Tk()
-    window3.title('Работа циклов')
-    window3['bg'] = 'aquamarine'
-    label1 = Label(window3, text='цикл', font=font_for_cycles, bg='aquamarine')
-    label1.grid(row=0, column=0, columnspan=n * n + n - 1)
+    font_for_cycles = my_font if len(cycles) < 15 and n < 4 else my_font2
+    label11 = Label(tab4, text='цикл', font=font_for_cycles, bg='aquamarine')
+    label11.grid(row=0, column=0, columnspan=n * n + n - 1)
+    labels2.append(label11)
     for i in range(n):
-        label2 = Label(window3, text=f' работа по \n {i + 1}-й форме ', font=font_for_cycles, bg='aquamarine')
+        label2 = Label(tab4, text=f' работа по \n {i + 1}-й форме ', font=font_for_cycles, bg='aquamarine')
         label2.grid(row=0, column=i + n * n + n)
+        labels2.append(label2)
     row, new_row, delta = 1, 0, n * (n + 2)
     for ind, i in enumerate(cycles):
-        label3 = Label(window3, text=str(i.cycle[0] + 1), font=font_for_cycles, bg='aquamarine')
-        if row > 27:
+        label3 = Label(tab4, text=str(i.cycle[0] + 1), font=font_for_cycles, bg='aquamarine')
+        if row > 26:
             label3.grid(row=new_row, column=delta)
         else:
             label3.grid(row=row, column=0)
+        labels2.append(label3)
         column = 1
         for j in i.cycle[1:]:
-            label31 = Label(window3, text=arrows_styles2[j[1] // 3], font=font_for_cycles, fg=arrows_colors[j[1] % 3],
+            label31 = Label(tab4, text=arrows_styles2[j[1] // 3], font=font_for_cycles, fg=arrows_colors[j[1] % 3],
                             bg='aquamarine')
-            if row > 27:
+            if row > 26:
                 label31.grid(row=new_row, column=delta + column)
             else:
                 label31.grid(row=row, column=column)
+            labels2.append(label31)
             column += 1
-            label31 = Label(window3, text=str(j[0] + 1), font=font_for_cycles, bg='aquamarine')
-            if row > 27:
+            label31 = Label(tab4, text=str(j[0] + 1), font=font_for_cycles, bg='aquamarine')
+            if row > 26:
                 label31.grid(row=new_row, column=delta + column)
             else:
                 label31.grid(row=row, column=column)
+            labels2.append(label31)
             column += 1
         for j in range(n):
             sum, i_ind = 0, i.cycle[0]
@@ -413,65 +418,73 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
                 i_ind = j_ind
             if sum:
                 work_for_cycles[ind].append((round(sum, 2), round(sum / work[j] * 100, 2)))
-                label4 = Label(window3, text=f' {str(round(sum, 2))} - {str(round(sum / work[j] * 100, 2))}% ',
+                label4 = Label(tab4, text=f' {str(round(sum, 2))} - {str(round(sum / work[j] * 100, 2))}% ',
                                font=font_for_cycles, bg='aquamarine')
             else:
                 work_for_cycles[ind].append((round(sum, 2), 0.0))
-                label4 = Label(window3, text=f' {str(round(sum, 2))} - 0.0% ', font=font_for_cycles, bg='aquamarine')
-            if row > 27:
+                label4 = Label(tab4, text=f' {str(round(sum, 2))} - 0.0% ', font=font_for_cycles, bg='aquamarine')
+            if row > 26:
                 label4.grid(row=new_row, column=delta + j + n * n + n)
             else:
                 label4.grid(row=row, column=j + n * n + n)
+            labels2.append(label4)
         row += 1
-        if row > 27:
+        if row > 26:
             new_row += 1
-            label1 = Label(window3, text='цикл', font=font_for_cycles, bg='aquamarine')
-            label1.grid(row=0, column=delta, columnspan=n * n + n - 1)
+            label12 = Label(tab4, text='цикл', font=font_for_cycles, bg='aquamarine')
+            label12.grid(row=0, column=delta, columnspan=n * n + n - 1)
+            labels2.append(label12)
             for k in range(n):
-                label2 = Label(window3, text=f' работа по \n {k + 1}-й форме ', font=font_for_cycles, bg='aquamarine')
+                label2 = Label(tab4, text=f' работа по \n {k + 1}-й форме ', font=font_for_cycles, bg='aquamarine')
                 label2.grid(row=0, column=k + n * n + n + delta)
-    label5 = Label(window3, text='суммарная работа', font=font_for_cycles, bg='aquamarine')
+                labels2.append(label2)
+    label5 = Label(tab4, text='суммарная работа', font=font_for_cycles, bg='aquamarine')
     if new_row:
         label5.grid(row=new_row, column=delta, columnspan=n * n + n - 1)
     else:
         label5.grid(row=row, column=0, columnspan=n * n + n - 1)
+    labels2.append(label5)
     for i in range(n):
-        label51 = Label(window3, text=str(round(work[i], 5)), font=font_for_cycles, bg='aquamarine')
+        label51 = Label(tab4, text=str(round(work[i], 5)), font=font_for_cycles, bg='aquamarine')
         if new_row:
             label51.grid(row=new_row, column=delta + n * n + n + i)
         else:
             label51.grid(row=row, column=n * n + n + i)
+        labels2.append(label51)
 
-    window4 = Tk()
-    window4.title('Потенциально неустойчивые формы и наиболее значимые связи')
-    window4['bg'] = 'aquamarine'
     forms = unstable_forms(work)
     if len(forms) > 1:
-        label6 = Label(window4, text=f'Потенциально неустойчивыми являются формы {forms[0] + 1} и {forms[1] + 1}',
+        label6 = Label(tab5, text=f'Потенциально неустойчивыми являются формы {forms[0] + 1} и {forms[1] + 1}',
                        font=my_font, bg='aquamarine')
     else:
-        label6 = Label(window4, text=f'Потенциально неустойчивой является форма {forms[0] + 1}', font=my_font,
+        label6 = Label(tab5, text=f'Потенциально неустойчивой является форма {forms[0] + 1}', font=my_font,
                        bg='aquamarine')
     label6.grid(row=0, column=0, columnspan=n * n + n)
+    labels2.append(label6)
     row = 1
     for form in forms:
-        label61 = Label(window4, text=f'наиболее значимые циклы по {form + 1}-й форме:', font=my_font, bg='aquamarine')
+        label61 = Label(tab5, text=f'наиболее значимые циклы по {form + 1}-й форме:', font=my_font, bg='aquamarine')
         label61.grid(row=row, column=0, columnspan=n * n + n)
+        labels2.append(label61)
         row += 1
         res = the_most_important_cycles_by_form(cycles, work_for_cycles, form)
         for j in range(len(res[0])):
-            label71 = Label(window4, text=str(res[0][j].cycle[0] + 1), font=my_font, bg='aquamarine')
+            label71 = Label(tab5, text=str(res[0][j].cycle[0] + 1), font=my_font, bg='aquamarine')
             label71.grid(row=row, column=0)
+            labels2.append(label71)
             column = 1
             for k in res[0][j].cycle[1:]:
-                label72 = Label(window4, text=arrows_styles2[k[1] // 3], font=my_font, fg=arrows_colors[k[1] % 3],
+                label72 = Label(tab5, text=arrows_styles2[k[1] // 3], font=my_font, fg=arrows_colors[k[1] % 3],
                                 bg='aquamarine')
                 label72.grid(row=row, column=column)
-                label73 = Label(window4, text=str(k[0] + 1), font=my_font, bg='aquamarine')
+                labels2.append(label72)
+                label73 = Label(tab5, text=str(k[0] + 1), font=my_font, bg='aquamarine')
                 label73.grid(row=row, column=column + 1)
+                labels2.append(label73)
                 column += 2
-            label74 = Label(window4, text=f'{res[1][j][0]} - {res[1][j][1]}%', font=my_font, bg='aquamarine')
+            label74 = Label(tab5, text=f'{res[1][j][0]} - {res[1][j][1]}%', font=my_font, bg='aquamarine')
             label74.grid(row=row, column=n * n + n - 1)
+            labels2.append(label74)
             row += 1
 
     the_most_important_connections, sum = [[], []], 0
@@ -482,26 +495,34 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
                 the_most_important_connections[1].append(lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] *
                                                          (w1[forms[0]] / 2 / math.pi) ** (i - 2))
                 sum += lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] * (w1[forms[0]] / 2 / math.pi) ** (i - 2)
-    the_most_important_connections[1] = list(map(lambda el: el / sum, the_most_important_connections[1]))
+    the_most_important_connections[1] =\
+        list(map(lambda el: el / sum,
+                 the_most_important_connections[1])) if sum != 0 else [0] * len(the_most_important_connections[1])
     the_most_important_connections = clean_the_most_important_connections(the_most_important_connections)
-    label8 = Label(window4, text='наиболее значимые связи:', font=my_font, bg='aquamarine')
+    label8 = Label(tab5, text='наиболее значимые связи:', font=my_font, bg='aquamarine')
     label8.grid(row=row, column=0, columnspan=n * n + n)
+    labels2.append(label8)
     row += 1
     if the_most_important_connections[0]:
         for i in range(len(the_most_important_connections[0])):
-            label81 = Label(window4, text=str(the_most_important_connections[0][i][0] + 1), font=my_font,
+            label81 = Label(tab5, text=str(the_most_important_connections[0][i][0] + 1), font=my_font,
                             bg='aquamarine')
             label81.grid(row=row, column=0)
-            label82 = Label(window4, text='-->', font=my_font, bg='aquamarine',
+            labels2.append(label81)
+            label82 = Label(tab5, text='-->', font=my_font, bg='aquamarine',
                             fg=arrows_colors[the_most_important_connections[0][i][2] % 3])
             label82.grid(row=row, column=1)
-            label83 = Label(window4, text=str(the_most_important_connections[0][i][1] + 1), font=my_font,
+            labels2.append(label82)
+            label83 = Label(tab5, text=str(the_most_important_connections[0][i][1] + 1), font=my_font,
                             bg='aquamarine')
             label83.grid(row=row, column=2)
-            label84 = Label(window4, text=f'{round(the_most_important_connections[1][i], 2)}%', font=my_font,
+            labels2.append(label83)
+            label84 = Label(tab5, text=f'{round(the_most_important_connections[1][i], 2)}%', font=my_font,
                             bg='aquamarine')
             label84.grid(row=row, column=3, columnspan=n * n + n - 3)
+            labels2.append(label84)
             row += 1
+    window.mainloop()
 
 
 try:
@@ -528,7 +549,7 @@ tab_control.add(tab4, text='Работа циклов ')
 tab_control.add(tab5, text='Потенциально неуст. формы, наиболее значимые связи ')
 l2 = l3 = l4 = Label(tab1)
 la4 = la5 = la61 = la62 = la63 = la64 = la65 = la66 = Label(tab2)
-l2i = l3i = l4i = list()
+l2i = l3i = l4i = labels2 = list()
 la71 = la72 = la73 = la74 = la75 = la76 = [[] for _ in range(n)]
 l1 = Label(tab1, text='Введите размерность системы', font=my_font, bg='aquamarine')
 e1 = Entry(tab1, width=10, font=my_font, justify=CENTER, bg='light cyan')

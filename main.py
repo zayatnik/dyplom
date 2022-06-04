@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from os import remove
 
 n = 1
-my_font, my_font2 = 'Courier 30', 'Courier 15'
+my_font, my_font2, my_font3 = 'Courier 30', 'Courier 15', 'Courier 7'
 colors, arrows_colors = ['0', 'g', 'b'], ['black', 'green', 'blue']
 arrows_styles1, arrows_styles2 = ['-', '<-'], ['---', '-->']
 
@@ -51,7 +51,7 @@ def get_graph_and_cycles_from_lon(lon: list) -> tuple:
     for i in range(3, 6):
         for j in range(n):
             for k in range(n):
-                if lon[i][j][k] > 0:
+                if lon[i][j][k] != 0:
                     graph[j].append((k, i))
     cycles = [[node] + path for node in range(n) for path in search_cycles(graph, node, node)]
     good_cycles = sorted(cycles)
@@ -91,7 +91,7 @@ def clean_cycles(cycles: list) -> list:
 
 def total_work(cycles: list, lon: list, v: list, w1: list) -> list:
     global n
-    work = [0 for _ in range(n)]
+    work = [[0, 0] for _ in range(n)]
     for i in cycles:
         for j in range(n):
             sum, i_ind = 0, i.cycle[0]
@@ -102,14 +102,15 @@ def total_work(cycles: list, lon: list, v: list, w1: list) -> list:
                     sum += lon[arrow_type][i_ind][j_ind] * v[i_ind][j] * v[j_ind][j] * (w1[j] / 2 / math.pi) **\
                            (arrow_type - 2)
                 i_ind = j_ind
-            work[j] += sum
+            work[j][0] += sum
+            work[j][1] += abs(sum)
     return work
 
 
 def unstable_forms(works: list) -> list:
     res = []
     for i, val in enumerate(works):
-        if val > 0:
+        if val[0] > 0:
             res.append(i)
     if len(res) > 2:
         res.remove(works.index(min(works)))
@@ -184,12 +185,12 @@ def click_button1():
 
     for i in range(n):
         for j in range(n):
-            loe1[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
-            loe2[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
-            loe3[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
-            loe4[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
-            loe5[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
-            loe6[i].append(Entry(window2, width=5, font=font_for_entry, justify=CENTER))
+            loe1[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
+            loe2[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
+            loe3[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
+            loe4[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
+            loe5[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
+            loe6[i].append(Entry(window2, width=6, font=font_for_entry, justify=CENTER))
             if i == j:
                 loe1[i][j].insert(END, 1)
                 loe2[i][j].insert(END, 1)
@@ -241,7 +242,7 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
             lon[4][i].append(float(loe5[i][j].get()))  # B2
             lon[5][i].append(float(loe6[i][j].get()))  # M2
 
-    font_for_matrices = my_font if n < 4 else my_font2
+    font_for_matrices = my_font if n < 4 else my_font3
     la4 = Label(tab2, text='Матрицы взаимных связей:', font=font_for_matrices, bg='aquamarine')
     la4.grid(row=0, column=0, columnspan=3 * n + 3)
     la5 = Label(tab2, text='Матрицы направленных связей:', font=font_for_matrices, bg='aquamarine')
@@ -280,11 +281,6 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
                 return None
             if i == j and (lon[3][i][j] != 0 or lon[4][i][j] != 0 or lon[5][i][j] != 0):
                 showerror('Ошибка!', 'Матрицы направленных связей должны иметь нулевые диагонали!')
-                return None
-            if i != j and (lon[3][i][j] != 0 and lon[3][j][i] != 0 or lon[4][i][j] != 0 and lon[4][j][i] != 0 or
-                           lon[5][i][j] != 0 and lon[5][j][i] != 0):
-                showerror('Ошибка!', 'Хотя бы один из двух противоположных элементов в матрицах направленных связей '
-                                     'должен быть нулевым!')
                 return None
             if i == j and (lon[0][i][j] == 0 or lon[1][i][j] == 0 or lon[2][i][j] == 0):
                 showerror('Ошибка!', 'Диагонали матриц взаимных связей не должны содержать нулей!')
@@ -375,7 +371,7 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
     cycles = clean_cycles(cycles)
     work, work_for_cycles = total_work(cycles, lon, v, w1), [[] for _ in cycles]
 
-    font_for_cycles = my_font if len(cycles) < 15 and n < 4 else my_font2
+    font_for_cycles = my_font if len(cycles) < 15 and n < 4 else my_font3
     label11 = Label(tab4, text='цикл', font=font_for_cycles, bg='aquamarine')
     label11.grid(row=0, column=0, columnspan=n * n + n - 1)
     labels2.append(label11)
@@ -417,8 +413,8 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
                            (arrow_type - 2)
                 i_ind = j_ind
             if sum:
-                work_for_cycles[ind].append((round(sum, 2), round(sum / work[j] * 100, 2)))
-                label4 = Label(tab4, text=f' {str(round(sum, 2))} - {str(round(sum / work[j] * 100, 2))}% ',
+                work_for_cycles[ind].append((round(sum, 2), round(abs(sum) / work[j][1] * 100, 2)))
+                label4 = Label(tab4, text=f' {str(round(sum, 2))} - {str(round(abs(sum) / work[j][1] * 100, 2))}% ',
                                font=font_for_cycles, bg='aquamarine')
             else:
                 work_for_cycles[ind].append((round(sum, 2), 0.0))
@@ -445,7 +441,7 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
         label5.grid(row=row, column=0, columnspan=n * n + n - 1)
     labels2.append(label5)
     for i in range(n):
-        label51 = Label(tab4, text=str(round(work[i], 5)), font=font_for_cycles, bg='aquamarine')
+        label51 = Label(tab4, text=str(round(work[i][0], 5)), font=font_for_cycles, bg='aquamarine')
         if new_row:
             label51.grid(row=new_row, column=delta + n * n + n + i)
         else:
@@ -453,75 +449,78 @@ def click_button2(loe1: list, loe2: list, loe3: list, loe4: list, loe5: list, lo
         labels2.append(label51)
 
     forms = unstable_forms(work)
+    font_for_forms = my_font if len(forms) < 2 else 'Courier 28'
     if len(forms) > 1:
         label6 = Label(tab5, text=f'Потенциально неустойчивыми являются формы {forms[0] + 1} и {forms[1] + 1}',
-                       font=my_font, bg='aquamarine')
+                       font=font_for_forms, bg='aquamarine')
     else:
-        label6 = Label(tab5, text=f'Потенциально неустойчивой является форма {forms[0] + 1}', font=my_font,
+        label6 = Label(tab5, text=f'Потенциально неустойчивой является форма {forms[0] + 1}', font=font_for_forms,
                        bg='aquamarine')
     label6.grid(row=0, column=0, columnspan=n * n + n)
     labels2.append(label6)
     row = 1
     for form in forms:
-        label61 = Label(tab5, text=f'наиболее значимые циклы по {form + 1}-й форме:', font=my_font, bg='aquamarine')
+        label61 = Label(tab5, text=f'наиболее значимые циклы по {form + 1}-й форме:', font=font_for_forms,
+                        bg='aquamarine')
         label61.grid(row=row, column=0, columnspan=n * n + n)
         labels2.append(label61)
         row += 1
         res = the_most_important_cycles_by_form(cycles, work_for_cycles, form)
         for j in range(len(res[0])):
-            label71 = Label(tab5, text=str(res[0][j].cycle[0] + 1), font=my_font, bg='aquamarine')
+            label71 = Label(tab5, text=str(res[0][j].cycle[0] + 1), font=font_for_forms, bg='aquamarine')
             label71.grid(row=row, column=0)
             labels2.append(label71)
             column = 1
             for k in res[0][j].cycle[1:]:
-                label72 = Label(tab5, text=arrows_styles2[k[1] // 3], font=my_font, fg=arrows_colors[k[1] % 3],
+                label72 = Label(tab5, text=arrows_styles2[k[1] // 3], font=font_for_forms, fg=arrows_colors[k[1] % 3],
                                 bg='aquamarine')
                 label72.grid(row=row, column=column)
                 labels2.append(label72)
-                label73 = Label(tab5, text=str(k[0] + 1), font=my_font, bg='aquamarine')
+                label73 = Label(tab5, text=str(k[0] + 1), font=font_for_forms, bg='aquamarine')
                 label73.grid(row=row, column=column + 1)
                 labels2.append(label73)
                 column += 2
-            label74 = Label(tab5, text=f'{res[1][j][0]} - {res[1][j][1]}%', font=my_font, bg='aquamarine')
+            label74 = Label(tab5, text=f'{res[1][j][0]} - {res[1][j][1]}%', font=font_for_forms, bg='aquamarine')
             label74.grid(row=row, column=n * n + n - 1)
             labels2.append(label74)
             row += 1
-
-    the_most_important_connections, sum = [[], []], 0
-    for i in range(3, 6):
-        for j in range(n):
-            for k in range(n):
-                the_most_important_connections[0].append((j, k, i))
-                the_most_important_connections[1].append(lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] *
-                                                         (w1[forms[0]] / 2 / math.pi) ** (i - 2))
-                sum += lon[i][j][k] * v[j][forms[0]] * v[k][forms[0]] * (w1[forms[0]] / 2 / math.pi) ** (i - 2)
-    the_most_important_connections[1] =\
-        list(map(lambda el: el / sum,
-                 the_most_important_connections[1])) if sum != 0 else [0] * len(the_most_important_connections[1])
-    the_most_important_connections = clean_the_most_important_connections(the_most_important_connections)
-    label8 = Label(tab5, text='наиболее значимые связи:', font=my_font, bg='aquamarine')
-    label8.grid(row=row, column=0, columnspan=n * n + n)
-    labels2.append(label8)
-    row += 1
-    if the_most_important_connections[0]:
-        for i in range(len(the_most_important_connections[0])):
-            label81 = Label(tab5, text=str(the_most_important_connections[0][i][0] + 1), font=my_font,
-                            bg='aquamarine')
-            label81.grid(row=row, column=0)
-            labels2.append(label81)
-            label82 = Label(tab5, text='-->', font=my_font, bg='aquamarine',
-                            fg=arrows_colors[the_most_important_connections[0][i][2] % 3])
-            label82.grid(row=row, column=1)
-            labels2.append(label82)
-            label83 = Label(tab5, text=str(the_most_important_connections[0][i][1] + 1), font=my_font,
-                            bg='aquamarine')
-            label83.grid(row=row, column=2)
-            labels2.append(label83)
-            label84 = Label(tab5, text=f'{round(the_most_important_connections[1][i], 2)}%', font=my_font,
-                            bg='aquamarine')
-            label84.grid(row=row, column=3, columnspan=n * n + n - 3)
-            labels2.append(label84)
-            row += 1
+    for form in forms:
+        the_most_important_connections, sum = [[], []], 0
+        for i in range(3, 6):
+            for j in range(n):
+                for k in range(n):
+                    the_most_important_connections[0].append((j, k, i))
+                    the_most_important_connections[1].append(lon[i][j][k] * v[j][form] * v[k][form] *
+                                                             (w1[form] / 2 / math.pi) ** (i - 2))
+                    sum += abs(lon[i][j][k] * v[j][form] * v[k][form] * (w1[form] / 2 / math.pi) ** (i - 2))
+        the_most_important_connections[1] =\
+            list(map(lambda el: abs(el) / abs(sum),
+                     the_most_important_connections[1])) if sum != 0 else [0] * len(the_most_important_connections[1])
+        the_most_important_connections = clean_the_most_important_connections(the_most_important_connections)
+        label8 = Label(tab5, text=f'наиболее значимые связи по {form + 1}-й форме:', font=font_for_forms,
+                       bg='aquamarine')
+        label8.grid(row=row, column=0, columnspan=n * n + n)
+        labels2.append(label8)
+        row += 1
+        if the_most_important_connections[0]:
+            for i in range(len(the_most_important_connections[0])):
+                label81 = Label(tab5, text=str(the_most_important_connections[0][i][0] + 1), font=font_for_forms,
+                                bg='aquamarine')
+                label81.grid(row=row, column=0)
+                labels2.append(label81)
+                label82 = Label(tab5, text='-->', font=font_for_forms, bg='aquamarine',
+                                fg=arrows_colors[the_most_important_connections[0][i][2] % 3])
+                label82.grid(row=row, column=1)
+                labels2.append(label82)
+                label83 = Label(tab5, text=str(the_most_important_connections[0][i][1] + 1), font=font_for_forms,
+                                bg='aquamarine')
+                label83.grid(row=row, column=2)
+                labels2.append(label83)
+                label84 = Label(tab5, text=f'{round(the_most_important_connections[1][i] * 100, 2)}%',
+                                font=font_for_forms, bg='aquamarine')
+                label84.grid(row=row, column=3, columnspan=n * n + n - 3)
+                labels2.append(label84)
+                row += 1
     window.mainloop()
 
 
